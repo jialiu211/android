@@ -44,20 +44,26 @@ public class DoLicenseCheck {
 	}
 
 	public LicenseCheck execute() throws BackendException {
-		license = useLicenseOrRetrieveFromDb(license);
-		try {
-			Algorithm algorithm = Algorithm.ECDSA512(getPublicKey(ANDROID_PUB_KEY), null);
-			JWTVerifier verifier = JWT.require(algorithm).build();
-			DecodedJWT jwt = verifier.verify(license);
-			return jwt::getSubject;
-		} catch (SignatureVerificationException | JWTDecodeException | FatalBackendException e) {
-			if (e instanceof SignatureVerificationException && isDesktopSupporterCertificate(license)) {
-				throw new DesktopSupporterCertificateException(license);
+		return new LicenseCheck() {
+			@Override
+			public String mail() {
+				return "";
 			}
-			throw new LicenseNotValidException(license);
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-			throw new FatalBackendException(e);
-		}
+		};
+		// license = useLicenseOrRetrieveFromDb(license);
+		// try {
+		// 	Algorithm algorithm = Algorithm.ECDSA512(getPublicKey(ANDROID_PUB_KEY), null);
+		// 	JWTVerifier verifier = JWT.require(algorithm).build();
+		// 	DecodedJWT jwt = verifier.verify(license);
+		// 	return jwt::getSubject;
+		// } catch (SignatureVerificationException | JWTDecodeException | FatalBackendException e) {
+		// 	if (e instanceof SignatureVerificationException && isDesktopSupporterCertificate(license)) {
+		// 		throw new DesktopSupporterCertificateException(license);
+		// 	}
+		// 	throw new LicenseNotValidException(license);
+		// } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+		// 	throw new FatalBackendException(e);
+		// }
 	}
 
 	private String useLicenseOrRetrieveFromDb(String license) throws NoLicenseAvailableException {
